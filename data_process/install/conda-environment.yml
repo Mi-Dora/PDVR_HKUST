@@ -1,0 +1,11 @@
+name: video2frame
+dependencies:
+  - python
+  - ffmpeg
+  - tqdm
+  - numpy
+  - lmdb
+  - python-lmdb
+  - h5py
+  - pip:
+      - easydict
