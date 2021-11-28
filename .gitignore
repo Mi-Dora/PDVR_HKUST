@@ -1,6 +1,5 @@
 ./datasets
 ./model
 ./model_path
-./output_data
 ./slim
 .idea
