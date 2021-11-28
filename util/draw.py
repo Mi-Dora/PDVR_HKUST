@@ -13,9 +13,12 @@ def draw(d: dict, interval: int):
     color_index = 0
 
     # save max similarity value each moment
+    x = list(range(0, len(d['0']) * interval, interval))
+    # max_len = 0
+    # for value in d.values():
+    #     max_len = max(max_len, len(value))
     max_sim = [0] * len(d['0'])
     # x coordinate
-    x = list(range(0, len(d['0']) * interval, interval))
     for key in d.keys():
         # save maximum similarity
         for i, sim in enumerate(d[key]):

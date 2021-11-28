@@ -40,6 +40,32 @@ def calculate_similarities(video_query_f, database):
     similarities = np.round(1 - dists / dist_max, decimals=6)
     return similarities, high_sim_db_idxs
 
+# def calculate_similarities(query_feature, features):
+#     """
+#       Function that generates video triplets from CC_WEB_VIDEO.
+#
+#       Args:
+#         query_feature: features of one query video
+#         features: global features of the videos in CC_WEB_VIDEO
+#       Returns:
+#         similarities: the similarities of this query with the videos in the dataset
+#     """
+#     similarities_of_all = {}
+#     # for one frame(picture) of the query
+#     for i, query_pic_feature in enumerate(query_feature):
+#         for j, videos_features in enumerate(features):
+#             dist = 0
+#             max_dist = 0
+#             if i < len(videos_features):
+#                 dist = np.nan_to_num(np.vdot(query_feature, videos_features[i]))
+#                 max_dist = max(max_dist, dist)
+#             sim = np.round(1 - dist / max_dist, decimals=6)
+#
+#             if str(j) in similarities_of_all:
+#                 similarities_of_all[str(j)].append(sim)
+#             else:
+#                 similarities_of_all[str(j)] = [sim]
+#     return similarities_of_all
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
