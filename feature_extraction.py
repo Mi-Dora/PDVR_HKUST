@@ -15,11 +15,12 @@
 
 from __future__ import division
 from __future__ import print_function
-
+import sys
+sys.path.append("extract_feature")
 import os
 import argparse
 import numpy as np
-
+from numba import cuda
 from tqdm import tqdm
 from future.utils import lrange
 from multiprocessing import Pool
@@ -121,7 +122,10 @@ def feature_extraction_images(model, cores, batch_sz, image_list, output_path):
             model.extract(np.array(image_tensor), batch_sz)
 
     # save features
-    np.save(os.path.join(output_path, '{}_features'.format(model.net_name)), features)
+    np.save(os.path.join(output_path, '{}_features'.format(os.path.basename(image_list).split('_')[0])), features)
+    model.sess.close()
+    cuda.select_device(0)
+    cuda.close()
 
 
 if __name__ == '__main__':
@@ -159,7 +163,7 @@ if __name__ == '__main__':
                             'https://github.com/tensorflow/models/tree/master/research/slim')
         elif '.ckpt' not in args['tf_model']:
             raise Exception('--tf_model argument is not a .ckpt file.')
-        from model_tf import CNN_tf
+        from extract_feature.model_tf import CNN_tf
         model = CNN_tf(args['network'].lower(), args['tf_model'])
     elif args['framework'].lower() in ['cf', 'caffe']:
         print('Selected framework: Caffe')
@@ -172,7 +176,7 @@ if __name__ == '__main__':
         elif '.caffemodel' not in args['caffemodel']:
             raise Exception('--caffemodel is not a .caffemodel file')
 
-        from model_caffe import CNN_caffe
+        from extract_feature.model_caffe import CNN_caffe
         model = CNN_caffe(args['network'].lower(), args['prototxt'], args['caffemodel'])
     else:
         raise Exception('--framework is invalid. Only Caffe and Tensorflow frameworks are supported')

@@ -45,7 +45,11 @@ def gen_database(img_path, save_path):
             with open(os.path.join(save_path, key+'_list.txt'), 'w') as f:
                 f.writelines(img_list)
     for root, _, files in os.walk(save_path):
-        return files
+        txt_files = []
+        for file in files:
+            if file.endswith('txt'):
+                txt_files.append(file)
+        return txt_files
 
 
 def load_dataset(dataset):
