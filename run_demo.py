@@ -23,53 +23,53 @@ def get_feature(img_list, save_path, model_path, cores=8, batch_sz=32):
                               img_list, save_path)
 
 
-def calculate_similarities(video_query_f, database):
+def calculate_euclidean_metric(l1: list, l2: list) -> int:
+    if len(l1) != len(l2):
+        return 0
 
-    dists = np.zeros(video_query_f.shape[0])
-    high_sim_db_idxs = -np.ones(video_query_f.shape[0])
-    dist_max = 0
-    for i, img_query_f in enumerate(video_query_f):
-        for db_id, v_db_f in enumerate(database):
-            for img_db_f in v_db_f:
-                dist = np.nan_to_num(cdist(img_query_f, img_db_f, metric='euclidean'))
-                if dist < dist[i]:
-                    dists[i] = dist
-                    high_sim_db_idxs[i] = db_id
-                if dist_max < dist:
-                    dist_max = dist
-    similarities = np.round(1 - dists / dist_max, decimals=6)
-    return similarities, high_sim_db_idxs
+    dist = 0
+    for i, item in enumerate(l1):
+        dist += (1.0 * item - l2[i]) ** 2
+    return dist
 
-# def calculate_similarities(query_feature, features):
-#     """
-#       Function that generates video triplets from CC_WEB_VIDEO.
-#
-#       Args:
-#         query_feature: features of one query video
-#         features: global features of the videos in CC_WEB_VIDEO
-#       Returns:
-#         similarities: the similarities of this query with the videos in the dataset
-#     """
-#     similarities_of_all = {}
-#     # for one frame(picture) of the query
-#     for i, query_pic_feature in enumerate(query_feature):
-#         for j, videos_features in enumerate(features):
-#             dist = 0
-#             max_dist = 0
-#             if i < len(videos_features):
-#                 dist = np.nan_to_num(np.vdot(query_pic_feature, videos_features[i]))
-#                 max_dist = max(max_dist, dist)
-#
-#             if str(j) in similarities_of_all:
-#                 similarities_of_all[str(j)].append(dist)
-#             else:
-#                 similarities_of_all[str(j)] = [dist]
-#     for values in similarities_of_all.values():
-#         max_dist = max(values)
-#         temp = [np.round(1 - dist / max_dist, decimals=6) for dist in values]
-#         values = temp
-#
-#     return similarities_of_all
+
+def calculate_similarities(query_feature, features):
+    """
+      Function that generates video triplets from CC_WEB_VIDEO.
+
+      Args:
+        query_feature: features of one query video
+        features: global features of the videos in CC_WEB_VIDEO
+      Returns:
+        similarities: the similarities of this query with the videos in the dataset
+    """
+    similarities_of_all = {}
+    # for one frame(picture) of the query
+    for i, query_pic_feature in enumerate(query_feature):
+
+        # record every moment maximum dist, normalize it
+        max_dist = 0
+        for j, videos_features in enumerate(features):
+            # find the min_dist value in each video
+            min_dist = 100000000
+            for pic_features in videos_features:
+                min_dist = min(min_dist, calculate_euclidean_metric(query_pic_feature, pic_features))
+
+            if str(j) in similarities_of_all:
+                similarities_of_all[str(j)].append(min_dist)
+            else:
+                similarities_of_all[str(j)] = [min_dist]
+
+            max_dist = max(min_dist, max_dist)
+
+        # normalize every frame's distance (calculate final similarity)
+        for values in similarities_of_all.values():
+            if max_dist == 0:
+                values[i] = 1.0
+            else:
+                values[i] = np.round(1 - values[i] / max_dist, decimals=6)
+
+    return similarities_of_all
 
 
 if __name__ == '__main__':
