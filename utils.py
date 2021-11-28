@@ -16,12 +16,36 @@
 from __future__ import division
 from __future__ import print_function
 
+import os
 import numpy as np
 import pickle as pk
 import matplotlib.pylab as plt
 
 from future.utils import lrange
 from sklearn.metrics import precision_recall_curve
+
+
+def gen_database(img_path, save_path):
+    db_dict = {}
+    for root, _, files in os.walk(img_path):
+        for file in files:
+            if file[0] == '.':
+                continue
+            name = file.split('.')[0].split('_')
+            v_id, img_id = name
+            if v_id not in db_dict.keys():
+                db_dict[v_id] = []
+            db_dict[v_id].append(int(img_id))
+        for key in db_dict.keys():
+            img_ids = db_dict[key]
+            img_ids = np.sort(np.array(img_ids))
+            img_list = []
+            for img_id in img_ids:
+                img_list.append(os.path.join(root, key+'_'+str(img_id)+'.jpg\n'))
+            with open(os.path.join(save_path, key+'_list.txt'), 'w') as f:
+                f.writelines(img_list)
+    for root, _, files in os.walk(save_path):
+        return files
 
 
 def load_dataset(dataset):
