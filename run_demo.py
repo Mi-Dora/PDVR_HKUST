@@ -57,15 +57,20 @@ def calculate_similarities(video_query_f, database):
 #             dist = 0
 #             max_dist = 0
 #             if i < len(videos_features):
-#                 dist = np.nan_to_num(np.vdot(query_feature, videos_features[i]))
+#                 dist = np.nan_to_num(np.vdot(query_pic_feature, videos_features[i]))
 #                 max_dist = max(max_dist, dist)
-#             sim = np.round(1 - dist / max_dist, decimals=6)
 #
 #             if str(j) in similarities_of_all:
-#                 similarities_of_all[str(j)].append(sim)
+#                 similarities_of_all[str(j)].append(dist)
 #             else:
-#                 similarities_of_all[str(j)] = [sim]
+#                 similarities_of_all[str(j)] = [dist]
+#     for values in similarities_of_all.values():
+#         max_dist = max(values)
+#         temp = [np.round(1 - dist / max_dist, decimals=6) for dist in values]
+#         values = temp
+#
 #     return similarities_of_all
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
