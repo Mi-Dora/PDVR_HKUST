@@ -20,7 +20,6 @@ sys.path.append("extract_feature")
 import os
 import argparse
 import numpy as np
-from numba import cuda
 from tqdm import tqdm
 from future.utils import lrange
 from multiprocessing import Pool

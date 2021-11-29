@@ -26,16 +26,6 @@ def get_feature(img_list, save_path, model_path, cores=8, batch_sz=32):
                               img_list, save_path)
 
 
-def calculate_euclidean_metric(l1: list, l2: list) -> int:
-    if len(l1) != len(l2):
-        return 0
-
-    dist = 0
-    for i, item in enumerate(l1):
-        dist += (1.0 * item - l2[i]) ** 2
-    return dist
-
-
 def calculate_similarities(query_feature, features):
     """
 
@@ -51,7 +41,7 @@ def calculate_similarities(query_feature, features):
             # find the min_dist value in each video
             min_dist = 100000000
             for pic_features in videos_features:
-                min_dist = min(min_dist, calculate_euclidean_metric(query_pic_feature, pic_features))
+                min_dist = min(min_dist, np.sum((np.array(query_pic_feature) - np.array(pic_features))**2))
 
             if str(j+1) in similarities_of_all:
                 similarities_of_all[str(j+1)].append(min_dist)
