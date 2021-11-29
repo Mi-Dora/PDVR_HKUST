@@ -37,6 +37,7 @@ def calculate_similarities(query_feature, features):
         max_dist = 0
         min_dist_video = 10000000
         min_video_index = -1
+        min_video_frame_index = -1
         for j, videos_features in enumerate(features):
             # find the min_dist value in each video
             min_dist_pic = 100000000
@@ -53,10 +54,11 @@ def calculate_similarities(query_feature, features):
             else:
                 similarities_of_all[str(j+1)] = [min_dist_pic]
             if min_dist_pic < min_dist_video:
+                min_video_frame_index = min_pic_index
                 min_video_index = j
                 min_dist_video = min_dist_pic
             max_dist = max(min_dist_pic, max_dist)
-        gif_index.append((min_video_index+1, min_pic_index))
+        gif_index.append((min_video_index+1, min_video_frame_index))
         # normalize every frame's distance (calculate final similarity)
         for values in similarities_of_all.values():
             values[i] = np.round(1 - values[i] / max_dist, decimals=6)
