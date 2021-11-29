@@ -25,11 +25,11 @@ def draw(d: dict, interval: int):
         for i, sim in enumerate(d[key]):
             max_sim[i] = max(max_sim[i], sim)
         # draw each line
-        plt.plot(x, d[key], markersize='3', color=colors[color_index], marker='o', label='video'+str(key), linestyle='-')
+        plt.plot(x, d[key], markersize='1', color=colors[color_index], marker='o', label='video'+str(key), linestyle='-')
         color_index += 1
 
     # draw max similarity line
-    plt.plot(x, max_sim, markersize='5', color='#000000', marker='o', label='max similarity', linestyle='-')
+    plt.plot(x, max_sim, markersize='2', color='#000000', marker='o', label='max similarity', linestyle='-')
     color_index += 1
     plt.title('Similarities between query video and Database')
     plt.xlabel('Time /s')
