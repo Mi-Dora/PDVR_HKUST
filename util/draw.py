@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+import json
 
 ''' 
 draw the picture from dict, where dict is form of
@@ -35,3 +36,10 @@ def draw(d: dict, interval: int):
     plt.ylabel('Similarity')
     plt.legend(bbox_to_anchor=(1.01, 0), loc='lower left')
     plt.show()
+
+
+if __name__ == '__main__':
+    with open('../sim_output.json', 'r') as f:
+        content = f.read()
+    sim_dict = json.loads(content)
+    draw(sim_dict, 1)

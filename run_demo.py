@@ -8,6 +8,9 @@ from __future__ import print_function
 import argparse
 import multiprocessing
 
+import numpy as np
+import tqdm
+import json
 from utils import *
 from scipy.spatial.distance import cdist
 
@@ -35,14 +38,9 @@ def calculate_euclidean_metric(l1: list, l2: list) -> int:
 
 def calculate_similarities(query_feature, features):
     """
-      Function that generates video triplets from CC_WEB_VIDEO.
 
-      Args:
-        query_feature: features of one query video
-        features: global features of the videos in CC_WEB_VIDEO
-      Returns:
-        similarities: the similarities of this query with the videos in the dataset
     """
+    pbar = tqdm.tqdm(total=len(query_feature))
     similarities_of_all = {}
     # for one frame(picture) of the query
     for i, query_pic_feature in enumerate(query_feature):
@@ -68,6 +66,8 @@ def calculate_similarities(query_feature, features):
                 values[i] = 1.0
             else:
                 values[i] = np.round(1 - values[i] / max_dist, decimals=6)
+        pbar.update(1)
+    pbar.close()
 
     return similarities_of_all
 
@@ -97,10 +97,11 @@ if __name__ == '__main__':
 
     args = vars(parser.parse_args())
 
-    process_database = False
-    process_query = False
+    process_database_feature = False
+    process_query_feature = False
+    process_embedding = False
 
-    if process_database:
+    if process_database_feature:
         print('Generating database...')
         db_lists = gen_database(img_path=os.path.join(args['database'], 'pic'), save_path=args['database'])
         print('Extract features from database')
@@ -112,32 +113,46 @@ if __name__ == '__main__':
             p.start()
             p.join()
 
-    if process_query:
+    if process_query_feature:
         print('Processing query video...')
         p = multiprocessing.Process(target=get_feature, args=(args['query_list'], args['query_path'], args['tf_model']))
         p.start()
         p.join()
 
-    print('Embedding features...')
-    query_features_file = os.path.join(args['query_path'], 'q_features.npy')
-    query_features = np.load(query_features_file)
+    if process_embedding:
+        print('Embedding features...')
+        query_features_file = os.path.join(args['query_path'], 'q_features.npy')
+        query_features = np.load(query_features_file)
 
-    model = DNN(query_features.shape[1],
-                args['model_path'],
-                load_model=True,
-                trainable=False)
-    query_embeddings = model.embeddings(query_features)
-    np.save(args['query_path'] + 'q_embedding.npy', query_embeddings)
-    feature_files = []
+        model = DNN(query_features.shape[1],
+                    args['model_path'],
+                    load_model=True,
+                    trainable=False)
+        query_embeddings = model.embeddings(query_features)
+        np.save(args['query_path'] + 'q_embedding.npy', query_embeddings)
+        db_feature_files = []
+        for root, _, files in os.walk(args['output_path']):
+            for file in files:
+                if file.endswith('_features.npy'):
+                    db_feature_files.append(os.path.join(root, file))
+        for file in db_feature_files:
+            feature = np.load(file)
+            db_embeddings = model.embeddings(feature)
+            np.save(file[:-len('_features.npy')] + '_embedding.npy', db_embeddings)
+
+    db_embedding_files = []
     for root, _, files in os.walk(args['output_path']):
         for file in files:
-            if file.endswith('_features.npy'):
-                feature_files.append(os.path.join(root, file))
-    for file in feature_files:
-        feature = np.load(file)
-        db_embeddings = model.embeddings(feature)
-        np.save(file[:-len('_features.npy')]+'_embedding.npy', db_embeddings)
+            if file.endswith('_embedding.npy'):
+                db_embedding_files.append(os.path.join(root, file))
+    db_embeddings = []
+    for file in db_embedding_files:
+        db_embeddings.append(np.load(file))
+    query_embeddings = np.load(args['query_path'] + 'q_embedding.npy')
+    print('Computing similarity...')
+    similarities = calculate_similarities(query_embeddings, db_embeddings)
+    json_sim = json.dumps(similarities)
+    with open('sim_output.json', 'w') as f:
+        f.write(json_sim)
 
-
-    # similarities = calculate_similarities(cc_dataset['queries'], query_embeddings)
 
