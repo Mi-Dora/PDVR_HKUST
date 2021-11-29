@@ -68,12 +68,12 @@ def calculate_similarities(query_feature, features):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-ql', '--query_list', type=str, default='query/q_list.txt',
+    parser.add_argument('-ql', '--query', type=str, default='query/',
                         help='Path to the .npy file that contains the global '
                              'video vectors of the CC_WEB_VIDEO dataset')
-    parser.add_argument('-qp', '--query_path', type=str, default='query/',
-                        help='Path to the .npy file that contains the global '
-                             'video vectors of the CC_WEB_VIDEO dataset')
+    # parser.add_argument('-qp', '--query_path', type=str, default='query/pic',
+    #                     help='Path to the .npy file that contains the global '
+    #                          'video vectors of the CC_WEB_VIDEO dataset')
     parser.add_argument('-m', '--model_path', type=str, default='model/',
                         help='Path to load the trained DML model')
     parser.add_argument('-db', '--database', type=str, default='database/',
@@ -83,8 +83,8 @@ if __name__ == '__main__':
                              'and the full path to the corresponding .npy file, separated '
                              'by a tab character (\\t)')
 
-    parser.add_argument('-o', '--output_path', type=str, default='database/',
-                        help='Output directory where the generated database files will be stored')
+    # parser.add_argument('-o', '--output_path', type=str, default='database/',
+    #                     help='Output directory where the generated database files will be stored')
     parser.add_argument('-tf', '--tf_model', type=str, default='slim/vgg_16.ckpt',
                         help='Path to the .ckpt file of the pre-trained CNN model. '
                              'Required if Tensorflow framework is selected')
@@ -103,19 +103,20 @@ if __name__ == '__main__':
             # If do not use multiprocessing, there will be a memory overflow error
             p = multiprocessing.Process(target=get_feature,
                                         args=(os.path.join(args['database'] + db_list),
-                                              args['output_path'], args['tf_model']))
+                                              args['database'], args['tf_model']))
             p.start()
             p.join()
 
     if process_query_feature:
         print('Processing query video...')
-        p = multiprocessing.Process(target=get_feature, args=(args['query_list'], args['query_path'], args['tf_model']))
+        p = multiprocessing.Process(target=get_feature,
+                                    args=(args['query']+'q_list.txt', args['query'], args['tf_model']))
         p.start()
         p.join()
 
     if process_embedding:
         print('Embedding features...')
-        query_features_file = os.path.join(args['query_path'], 'q_features.npy')
+        query_features_file = os.path.join(args['query'], 'q_features.npy')
         query_features = np.load(query_features_file)
 
         model = DNN(query_features.shape[1],
@@ -123,9 +124,9 @@ if __name__ == '__main__':
                     load_model=True,
                     trainable=False)
         query_embeddings = model.embeddings(query_features)
-        np.save(args['query_path'] + 'q_embedding.npy', query_embeddings)
+        np.save(args['query'] + 'q_embedding.npy', query_embeddings)
         db_feature_files = []
-        for root, _, files in os.walk(args['output_path']):
+        for root, _, files in os.walk(args['database']):
             for file in files:
                 if file.endswith('_features.npy'):
                     db_feature_files.append(os.path.join(root, file))
@@ -135,14 +136,19 @@ if __name__ == '__main__':
             np.save(file[:-len('_features.npy')] + '_embedding.npy', db_embeddings)
 
     db_embedding_files = []
-    for root, _, files in os.walk(args['output_path']):
+    for root, _, files in os.walk(args['database']):
         for file in files:
             if file.endswith('_embedding.npy'):
-                db_embedding_files.append(os.path.join(root, file))
+                vid = int(file.split('_')[0])
+                db_embedding_files.append((os.path.join(root, file), vid))
+
+    def getVid(x):
+        return x[1]
+    db_embedding_files.sort(key=getVid)
     db_embeddings = []
     for file in db_embedding_files:
-        db_embeddings.append(np.load(file))
-    query_embeddings = np.load(args['query_path'] + 'q_embedding.npy')
+        db_embeddings.append(np.load(file[0]))
+    query_embeddings = np.load(args['query'] + 'q_embedding.npy')
     print('Computing similarity...')
     similarities = calculate_similarities(query_embeddings, db_embeddings)
     json_sim = json.dumps(similarities)

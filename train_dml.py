@@ -54,7 +54,7 @@ def train_dml_network(model, train_set, triplets, epochs, batch_sz):
 
             _, loss, error = model.train(train_batch)
             with open('output_data/loss_log.txt', 'a') as f:
-                f.writelines('{}'.format(loss))
+                f.writelines('{}\n'.format(loss))
 
             pbar.set_postfix(loss=loss, error='{0:.2f}%'.format(error))
 

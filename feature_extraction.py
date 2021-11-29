@@ -123,8 +123,6 @@ def feature_extraction_images(model, cores, batch_sz, image_list, output_path):
     # save features
     np.save(os.path.join(output_path, '{}_features'.format(os.path.basename(image_list).split('_')[0])), features)
     model.sess.close()
-    cuda.select_device(0)
-    cuda.close()
 
 
 if __name__ == '__main__':
