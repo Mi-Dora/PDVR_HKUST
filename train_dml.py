@@ -53,6 +53,8 @@ def train_dml_network(model, train_set, triplets, epochs, batch_sz):
             train_batch = train_set[triplet_batch.reshape(-1)]
 
             _, loss, error = model.train(train_batch)
+            with open('output_data/loss_log.txt', 'a') as f:
+                f.writelines('{}'.format(loss))
 
             pbar.set_postfix(loss=loss, error='{0:.2f}%'.format(error))
 
@@ -87,7 +89,7 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--layers', default='2000,1000,500',
                         help='Number of neuron for each layer of the DML network, '
                              'separated by a comma \',\'. Default: 2000,1000,500')
-    parser.add_argument('-e', '--epochs', type=int, default=10,
+    parser.add_argument('-e', '--epochs', type=int, default=50,
                         help='Number of epochs to train the DML network. Default: 10')
     parser.add_argument('-b', '--batch_sz', type=int, default=1000,
                         help='Number of triplets fed every training iteration. '

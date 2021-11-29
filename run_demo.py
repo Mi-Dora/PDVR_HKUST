@@ -146,7 +146,7 @@ if __name__ == '__main__':
     print('Computing similarity...')
     similarities = calculate_similarities(query_embeddings, db_embeddings)
     json_sim = json.dumps(similarities)
-    with open('sim_output.json', 'w') as f:
+    with open('output_data/sim_output.json', 'w') as f:
         f.write(json_sim)
 
 

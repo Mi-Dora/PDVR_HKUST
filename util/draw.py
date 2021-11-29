@@ -41,7 +41,7 @@ def draw(d: dict, interval: int):
 
 
 if __name__ == '__main__':
-    with open('../sim_output.json', 'r') as f:
+    with open('../output_data/sim_output.json', 'r') as f:
         content = f.read()
     sim_dict = json.loads(content)
     draw(sim_dict, 1)
