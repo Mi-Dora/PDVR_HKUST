@@ -53,10 +53,10 @@ def calculate_similarities(query_feature, features):
             for pic_features in videos_features:
                 min_dist = min(min_dist, calculate_euclidean_metric(query_pic_feature, pic_features))
 
-            if str(j) in similarities_of_all:
-                similarities_of_all[str(j)].append(min_dist)
+            if str(j+1) in similarities_of_all:
+                similarities_of_all[str(j+1)].append(min_dist)
             else:
-                similarities_of_all[str(j)] = [min_dist]
+                similarities_of_all[str(j+1)] = [min_dist]
 
             max_dist = max(min_dist, max_dist)
 

@@ -1,5 +1,7 @@
 from matplotlib import pyplot as plt
 import json
+import numpy as np
+from scipy.interpolate import make_interp_spline
 
 ''' 
 draw the picture from dict, where dict is form of
@@ -14,23 +16,28 @@ def draw(d: dict, interval: int):
     color_index = 0
 
     # save max similarity value each moment
-    x = list(range(0, len(d['0']) * interval, interval))
+    xs = np.linspace(0, len(d['1']) * interval, 1000)
+    x = list(range(0, len(d['1']) * interval, interval))
     # max_len = 0
     # for value in d.values():
     #     max_len = max(max_len, len(value))
-    max_sim = [0] * len(d['0'])
+    max_sim = [0] * len(d['1'])
     # x coordinate
     for key in d.keys():
         # save maximum similarity
         for i, sim in enumerate(d[key]):
             max_sim[i] = max(max_sim[i], sim)
+        model = make_interp_spline(x, d[key])
+
+        ys = model(xs)
         # draw each line
-        plt.plot(x, d[key], markersize='1', color=colors[color_index], marker='o', label='video'+str(key), linestyle='-')
+        plt.plot(xs, ys, color=colors[color_index], marker=None, label='video'+str(key), linestyle='-')
         color_index += 1
 
     # draw max similarity line
-    plt.plot(x, max_sim, markersize='2', color='#000000', marker='o', label='max similarity', linestyle='-')
-    color_index += 1
+    model = make_interp_spline(x, max_sim)
+    ys = model(xs)
+    # plt.plot(xs, ys, marker=None, color='#000000', label='max similarity', linestyle='-')
     plt.title('Similarities between query video and Database')
     plt.xlabel('Time /s')
     plt.ylabel('Similarity')
