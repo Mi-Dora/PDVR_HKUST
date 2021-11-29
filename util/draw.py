@@ -11,16 +11,12 @@ interval: the interval second between frames (adjacent frames)
 
 
 def draw(d: dict, interval: int):
-    colors = ['#BBFFFF', '#008B8B', '#76EEC6', '#00CD66', '#7B68EE', '#B0C4DE', '#EE6363', '#556B2F',
+    colors = ['#BBFFFF', '#90EE90', '#6A5ACD', '#8B8682', '#FFB6C1', '#B0C4DE', '#EE6363', '#CDC9A5',
               '#FFD700', '#8B4513', '#B03060', '#CDC9A5', '#FFFFF0']
-    color_index = 0
 
     # save max similarity value each moment
     xs = np.linspace(0, len(d['1']) * interval, 1000)
     x = list(range(0, len(d['1']) * interval, interval))
-    # max_len = 0
-    # for value in d.values():
-    #     max_len = max(max_len, len(value))
     max_sim = [0] * len(d['1'])
     # x coordinate
     for key in d.keys():
@@ -31,13 +27,12 @@ def draw(d: dict, interval: int):
 
         ys = model(xs)
         # draw each line
-        plt.plot(xs, ys, color=colors[color_index], marker=None, label='video'+str(key), linestyle='-')
-        color_index += 1
+        plt.plot(xs, ys, color=colors[int(key)-1], marker=None, label='video'+str(key), linestyle='-')
 
     # draw max similarity line
-    model = make_interp_spline(x, max_sim)
-    ys = model(xs)
-    # plt.plot(xs, ys, marker=None, color='#000000', label='max similarity', linestyle='-')
+    # model = make_interp_spline(x, max_sim)
+    # ys = model(xs)
+    # plt.plot(xs, ys, marker=None, color='#696969', label='max similarity', linestyle='-')
     plt.title('Similarities between query video and Database')
     plt.xlabel('Time /s')
     plt.ylabel('Similarity')

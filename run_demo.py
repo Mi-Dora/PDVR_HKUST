@@ -27,38 +27,42 @@ def get_feature(img_list, save_path, model_path, cores=8, batch_sz=32):
 
 
 def calculate_similarities(query_feature, features):
-    """
-
-    """
     pbar = tqdm.tqdm(total=len(query_feature))
     similarities_of_all = {}
+    gif_index = []
     # for one frame(picture) of the query
     for i, query_pic_feature in enumerate(query_feature):
 
         # record every moment maximum dist, normalize it
         max_dist = 0
+        min_dist_video = 10000000
+        min_video_index = -1
         for j, videos_features in enumerate(features):
             # find the min_dist value in each video
-            min_dist = 100000000
-            for pic_features in videos_features:
-                min_dist = min(min_dist, np.sum((np.array(query_pic_feature) - np.array(pic_features))**2))
+            min_dist_pic = 100000000
+            min_pic_index = -1
+            for k, pic_features in enumerate(videos_features):
+                dist = np.sum((np.array(query_pic_feature) - np.array(pic_features))**2)
+                if dist < min_dist_pic:
+                    min_dist_pic = dist
+                    min_pic_index = k
 
+            # add min_dist to (j+1)-th key's list
             if str(j+1) in similarities_of_all:
-                similarities_of_all[str(j+1)].append(min_dist)
+                similarities_of_all[str(j+1)].append(min_dist_pic)
             else:
-                similarities_of_all[str(j+1)] = [min_dist]
-
-            max_dist = max(min_dist, max_dist)
-
+                similarities_of_all[str(j+1)] = [min_dist_pic]
+            if min_dist_pic < min_dist_video:
+                min_video_index = j
+                min_dist_video = min_dist_pic
+            max_dist = max(min_dist_pic, max_dist)
+        gif_index.append((min_video_index+1, min_pic_index))
         # normalize every frame's distance (calculate final similarity)
         for values in similarities_of_all.values():
-            if max_dist == 0:
-                values[i] = 1.0
-            else:
-                values[i] = np.round(1 - values[i] / max_dist, decimals=6)
+            values[i] = np.round(1 - values[i] / max_dist, decimals=6)
         pbar.update(1)
     pbar.close()
-
+    np.save('./output_data/gif_index', np.array(gif_index))
     return similarities_of_all
 
 
