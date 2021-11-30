@@ -110,7 +110,7 @@ if __name__ == '__main__':
     print('CC_WEB_VIDEO')
     print('baseline mAP: ', mAP_base)
     print('DML mAP: ', mAP_dml)
-    plot_pr_curve(pr_curve_dml, pr_curve_base, 'CC_WEB_VIDEO')
+    plot_pr_curve(pr_curve_dml, pr_curve_base, 'CC_WEB_VIDEO', save='output_data/not_all_pr.png')
 
     mAP_dml, pr_curve_dml = evaluate(cc_dataset['ground_truth'], similarities,
                                      positive_labels=args['positive_labels'], all_videos=True)
@@ -119,4 +119,4 @@ if __name__ == '__main__':
     print('\nCC_WEB_VIDEO*')
     print('baseline mAP: ', mAP_base)
     print('DML mAP: ', mAP_dml)
-    plot_pr_curve(pr_curve_dml, pr_curve_base, 'CC_WEB_VIDEO*')
+    plot_pr_curve(pr_curve_dml, pr_curve_base, 'CC_WEB_VIDEO*', save='output_data/all_pr.png')

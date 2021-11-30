@@ -150,7 +150,7 @@ def global_vector(video):
         return np.array([])
 
 
-def plot_pr_curve(pr_curve_dml, pr_curve_base, title):
+def plot_pr_curve(pr_curve_dml, pr_curve_base, title, save=None):
     """
       Function that plots the PR-curve.
 
@@ -158,20 +158,23 @@ def plot_pr_curve(pr_curve_dml, pr_curve_base, title):
         pr_curve: the values of precision for each recall value
         title: the title of the plot
     """
-    plt.figure(figsize=(16, 9))
+    plt.figure(dpi=300)
     plt.plot(np.arange(0.0, 1.05, 0.05),
-             pr_curve_base, color='r', marker='o', linewidth=3, markersize=10)
+             pr_curve_base, color='r', marker='o', linewidth=3, markersize=5, label='Base')
     plt.plot(np.arange(0.0, 1.05, 0.05),
-             pr_curve_dml, color='b', marker='o', linewidth=3, markersize=10)
+             pr_curve_dml, color='b', marker='o', linewidth=3, markersize=5, label='DML')
     plt.grid(True, linestyle='dotted')
-    plt.xlabel('Recall', color='k', fontsize=27)
-    plt.ylabel('Precision', color='k', fontsize=27)
-    plt.yticks(color='k', fontsize=20)
-    plt.xticks(color='k', fontsize=20)
+    plt.xlabel('Recall', color='k')
+    plt.ylabel('Precision', color='k')
+    plt.yticks(color='k')
+    plt.xticks(color='k')
     plt.ylim([0.0, 1.05])
     plt.xlim([0.0, 1.0])
-    plt.title(title, color='k', fontsize=27)
+    plt.title(title, color='k')
     plt.tight_layout()
+    plt.legend(loc='lower left')
+    if save:
+        plt.savefig(save)
     plt.show()
 
 

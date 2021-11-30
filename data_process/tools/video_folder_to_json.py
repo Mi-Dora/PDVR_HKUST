@@ -1,5 +1,7 @@
 import hashlib
 import json
+import os
+
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from pathlib import Path
 
@@ -49,18 +51,18 @@ if "__main__" == __name__:
 
         tqdm.write(clazz_name)
 
-        number = 1
         for f in clazz.iterdir():
             if f.suffix.lower() in video_ext:
                 video_path = str(f)
-                key = str(number)
+                file_basename = os.path.basename(video_path)
+                file_name = os.path.splitext(file_basename)[0]
+                key = str(file_name)
 
                 data[key] = {
                     "path": video_path,
                     "class_name": clazz_name,
                     "class": clazz_num
                 }
-                number += 1
 
     data_all = {
         "meta": {
