@@ -1,0 +1,75 @@
+{
+    "meta": {
+        "class_num": 1,
+        "class_name": [
+            "original"
+        ]
+    },
+    "annotation": {
+        "7": {
+            "path": "/Users/yingxiayin/Class/MachineLearning/video/original/7.mp4",
+            "class_name": "original",
+            "class": 0
+        },
+        "6": {
+            "path": "/Users/yingxiayin/Class/MachineLearning/video/original/6.mp4",
+            "class_name": "original",
+            "class": 0
+        },
+        "4": {
+            "path": "/Users/yingxiayin/Class/MachineLearning/video/original/4.mp4",
+            "class_name": "original",
+            "class": 0
+        },
+        "5": {
+            "path": "/Users/yingxiayin/Class/MachineLearning/video/original/5.mp4",
+            "class_name": "original",
+            "class": 0
+        },
+        "1": {
+            "path": "/Users/yingxiayin/Class/MachineLearning/video/original/1.mp4",
+            "class_name": "original",
+            "class": 0
+        },
+        "2": {
+            "path": "/Users/yingxiayin/Class/MachineLearning/video/original/2.mp4",
+            "class_name": "original",
+            "class": 0
+        },
+        "3": {
+            "path": "/Users/yingxiayin/Class/MachineLearning/video/original/3.mp4",
+            "class_name": "original",
+            "class": 0
+        },
+        "11": {
+            "path": "/Users/yingxiayin/Class/MachineLearning/video/original/11.mp4",
+            "class_name": "original",
+            "class": 0
+        },
+        "10": {
+            "path": "/Users/yingxiayin/Class/MachineLearning/video/original/10.mp4",
+            "class_name": "original",
+            "class": 0
+        },
+        "12": {
+            "path": "/Users/yingxiayin/Class/MachineLearning/video/original/12.mp4",
+            "class_name": "original",
+            "class": 0
+        },
+        "13": {
+            "path": "/Users/yingxiayin/Class/MachineLearning/video/original/13.mp4",
+            "class_name": "original",
+            "class": 0
+        },
+        "8": {
+            "path": "/Users/yingxiayin/Class/MachineLearning/video/original/8.mp4",
+            "class_name": "original",
+            "class": 0
+        },
+        "9": {
+            "path": "/Users/yingxiayin/Class/MachineLearning/video/original/9.mp4",
+            "class_name": "original",
+            "class": 0
+        }
+    }
+}
