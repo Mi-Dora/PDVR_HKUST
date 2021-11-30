@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Contains model definitions for versions of the Oxford VGG network.
+"""Contains judgement_model definitions for versions of the Oxford VGG network.
 
-These model definitions were introduced in the following technical report:
+These judgement_model definitions were introduced in the following technical report:
 
   Very Deep Convolutional Networks For Large-Scale Image Recognition
   Karen Simonyan and Andrew Zisserman
@@ -80,7 +80,7 @@ def vgg_a(inputs,
     inputs: a tensor of size [batch_size, height, width, channels].
     num_classes: number of predicted classes. If 0 or None, the logits layer is
       omitted and the input features to the logits layer are returned instead.
-    is_training: whether or not the model is being trained.
+    is_training: whether or not the judgement_model is being trained.
     dropout_keep_prob: the probability that activations are kept in the dropout
       layers during training.
     spatial_squeeze: whether or not should squeeze the spatial dimensions of the
@@ -158,7 +158,7 @@ def vgg_16(inputs,
     inputs: a tensor of size [batch_size, height, width, channels].
     num_classes: number of predicted classes. If 0 or None, the logits layer is
       omitted and the input features to the logits layer are returned instead.
-    is_training: whether or not the model is being trained.
+    is_training: whether or not the judgement_model is being trained.
     dropout_keep_prob: the probability that activations are kept in the dropout
       layers during training.
     spatial_squeeze: whether or not should squeeze the spatial dimensions of the
@@ -236,7 +236,7 @@ def vgg_19(inputs,
     inputs: a tensor of size [batch_size, height, width, channels].
     num_classes: number of predicted classes. If 0 or None, the logits layer is
       omitted and the input features to the logits layer are returned instead.
-    is_training: whether or not the model is being trained.
+    is_training: whether or not the judgement_model is being trained.
     dropout_keep_prob: the probability that activations are kept in the dropout
       layers during training.
     spatial_squeeze: whether or not should squeeze the spatial dimensions of the

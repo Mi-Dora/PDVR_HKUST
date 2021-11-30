@@ -158,8 +158,8 @@ def inception_v4_base(inputs, final_endpoint='Mixed_7d', scope=None):
     scope: Optional variable_scope.
 
   Returns:
-    logits: the logits outputs of the model.
-    end_points: the set of end_points from the inception model.
+    logits: the logits outputs of the judgement_model.
+    end_points: the set of end_points from the inception judgement_model.
 
   Raises:
     ValueError: if final_endpoint is not set to one of the predefined values,
@@ -259,7 +259,7 @@ def inception_v4(inputs, num_classes=1001, is_training=True,
                  reuse=None,
                  scope='InceptionV4',
                  create_aux_logits=True):
-  """Creates the Inception V4 model.
+  """Creates the Inception V4 judgement_model.
 
   Args:
     inputs: a 4-D tensor of size [batch_size, height, width, 3].
@@ -277,7 +277,7 @@ def inception_v4(inputs, num_classes=1001, is_training=True,
     net: a Tensor with the logits (pre-softmax activations) if num_classes
       is a non-zero integer, or the non-dropped input to the logits layer
       if num_classes is 0 or None.
-    end_points: the set of end_points from the inception model.
+    end_points: the set of end_points from the inception judgement_model.
   """
   end_points = {}
   with tf.variable_scope(scope, 'InceptionV4', [inputs], reuse=reuse) as scope:

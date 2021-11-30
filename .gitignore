@@ -1,5 +1,4 @@
 ./datasets
-./model
 ./model_path
 ./slim
 .idea
