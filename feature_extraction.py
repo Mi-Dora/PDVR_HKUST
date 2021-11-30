@@ -49,7 +49,8 @@ def feature_extraction_videos(model, cores, batch_sz, video_list, output_path):
     pool = Pool(cores)
     future_videos = dict()
     output_list = []
-    pbar = tqdm(lrange(np.max(videos.keys()) + 1), mininterval=1.0, unit='videos')
+    a = list(np.max(videos.keys()))
+    pbar = tqdm(lrange(a[-1] + 1), mininterval=1.0, unit='videos')
     for video in pbar:
         if os.path.exists(videos[video]):
             video_name = os.path.splitext(os.path.basename(videos[video]))[0]
@@ -133,9 +134,9 @@ if __name__ == '__main__':
                         help='Framework to be used. Options: \'caffe\' or \'tensorflow\'')
     parser.add_argument('-o', '--output_path', type=str, required=True,
                         help='Output directory where the generated files will be stored')
-    parser.add_argument('-v', '--video_list', type=str,
+    parser.add_argument('-v', '--video_list', type=str, default='v_list.txt',
                         help='List of videos to extract features')
-    parser.add_argument('-i', '--image_list', type=str, default='pic/image_list.txt',
+    parser.add_argument('-i', '--image_list', type=str,
                         help='List of images to extract features')
     parser.add_argument('-tf', '--tf_model', type=str,
                         help='Path to the .ckpt file of the pre-trained CNN model. '
