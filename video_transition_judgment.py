@@ -30,6 +30,7 @@ class JudgementModel(nn.Module):
         return output
 
 
+# 获取数据，从embedding数据中，rate为阴性(negative)负样本的比率
 def prepare_data(size: int, rate: float):
     x_data = None
     y_data = []
@@ -84,7 +85,7 @@ def get_acc(outputs, labels):
 
     return acc
 
-
+'''获取precision'''
 def get_pre(outputs, labels, threshold):
     TP = 0
     TN = 0
@@ -97,6 +98,7 @@ def get_pre(outputs, labels, threshold):
     return TP*1.0/(TP+TN)
 
 
+'''获取recall'''
 def get_rec(outputs, labels, threshold):
     TP = 0
     FN = 0
@@ -107,6 +109,7 @@ def get_rec(outputs, labels, threshold):
             else:
                 FN += 1
     return TP*1.0/(TP+FN)
+
 
 def train(epoch_num: int, judgement_model):
     x, y = prepare_data(10000, 0.5)
@@ -145,8 +148,6 @@ def train(epoch_num: int, judgement_model):
 model = JudgementModel(1000, 512, 128, 2)
 model.load_state_dict(torch.load('./output_data/judgement_model'))
 model.eval()
-x_ = []
-y_ = []
 x, y = prepare_data(3360, 0.5)
 test_dataset = MyDataset(x, y)
 # 实例化
@@ -154,15 +155,12 @@ test_loader = DataLoader(dataset=test_dataset,  # 要传递的数据集
                          batch_size=3360,  # 一个小批量数据的大小是多少
                          shuffle=True,  # 数据集顺序是否要打乱，一般是要的。测试数据集一般没必要
                          num_workers=0)  # 需要几个进程来一次性读取这个小批量数据，默认0，一般用0就够了，多了有时会出一些底层错误
-for j in range(100):
-    for i, data in enumerate(test_loader):
-        inputs, labels = data
-        # 2. 前向传播
-        y_pred = model(inputs)
-        precision = get_pre(y_pred, labels, (j+1)*0.01)
-        recall = get_rec(y_pred, labels, (j+1)*0.01)
-        x_.append(recall)
-        y_.append(precision)
+
+for i, data in enumerate(test_loader):
+    inputs, labels = data
+    # 2. 前向传播
+    y_pred = model(inputs)
+
 
 # from matplotlib import pyplot as plt
 #
