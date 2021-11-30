@@ -11,6 +11,8 @@ import multiprocessing
 import numpy as np
 import tqdm
 import json
+
+from PDVR_HKUST.Lstm import Lstm
 from utils import *
 from scipy.spatial.distance import cdist
 
@@ -43,22 +45,22 @@ def calculate_similarities(query_feature, features):
             min_dist_pic = 100000000
             min_pic_index = -1
             for k, pic_features in enumerate(videos_features):
-                dist = np.sum((np.array(query_pic_feature) - np.array(pic_features))**2)
+                dist = np.sum((np.array(query_pic_feature) - np.array(pic_features)) ** 2)
                 if dist < min_dist_pic:
                     min_dist_pic = dist
                     min_pic_index = k
 
             # add min_dist to (j+1)-th key's list
-            if str(j+1) in similarities_of_all:
-                similarities_of_all[str(j+1)].append(min_dist_pic)
+            if str(j + 1) in similarities_of_all:
+                similarities_of_all[str(j + 1)].append(min_dist_pic)
             else:
-                similarities_of_all[str(j+1)] = [min_dist_pic]
+                similarities_of_all[str(j + 1)] = [min_dist_pic]
             if min_dist_pic < min_dist_video:
                 min_video_frame_index = min_pic_index
                 min_video_index = j
                 min_dist_video = min_dist_pic
             max_dist = max(min_dist_pic, max_dist)
-        gif_index.append((min_video_index+1, min_video_frame_index))
+        gif_index.append((min_video_index + 1, min_video_frame_index))
         # normalize every frame's distance (calculate final similarity)
         for values in similarities_of_all.values():
             values[i] = np.round(1 - values[i] / max_dist, decimals=6)
@@ -112,7 +114,7 @@ if __name__ == '__main__':
     if process_query_feature:
         print('Processing query video...')
         p = multiprocessing.Process(target=get_feature,
-                                    args=(args['query']+'q_list.txt', args['query'], args['tf_model']))
+                                    args=(args['query'] + 'q_list.txt', args['query'], args['tf_model']))
         p.start()
         p.join()
 
@@ -144,17 +146,22 @@ if __name__ == '__main__':
                 vid = int(file.split('_')[0])
                 db_embedding_files.append((os.path.join(root, file), vid))
 
+
     def getVid(x):
         return x[1]
+
+
     db_embedding_files.sort(key=getVid)
     db_embeddings = []
     for file in db_embedding_files:
         db_embeddings.append(np.load(file[0]))
     query_embeddings = np.load(args['query'] + 'q_embedding.npy')
     print('Computing similarity...')
-    similarities = calculate_similarities(query_embeddings, db_embeddings)
-    json_sim = json.dumps(similarities)
-    with open('output_data/sim_output.json', 'w') as f:
-        f.write(json_sim)
+    lstm = Lstm()
+    change_label = np.load("output_data/y_pred.npy")
+    lstm.train_lstm(query_embeddings, db_embeddings, change_label)
 
-
+    # similarities = calculate_similarities(query_embeddings, db_embeddings)
+    # json_sim = json.dumps(similarities)
+    # with open('output_data/sim_output.json', 'w') as f:
+    #     f.write(json_sim)
