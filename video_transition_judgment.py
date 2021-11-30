@@ -75,6 +75,21 @@ class MyDataset(Dataset):  # 继承Dataset类
     def __len__(self):
         return self.length  # 只需返回数据集的长度即可
 
+class RunDataSet(Dataset):  # 继承Dataset类
+    def __init__(self, x_data):
+        # 把数据拿出来
+        x_data = x_data.reshape(x_data.shape[0], -1)
+
+        self.x_data = x_data
+        # 数据集的长度
+        self.length = self.x_data.shape[0]
+
+    def __getitem__(self, index):  # 参数index必写
+        return self.x_data[index]
+
+    def __len__(self):
+        return self.length  # 只需返回数据集的长度即可
+
 
 def get_acc(outputs, labels):
     """计算acc"""
@@ -144,22 +159,22 @@ def train(epoch_num: int, judgement_model):
 # train(100, judgement_model)
 #
 # torch.save(judgement_model.state_dict(), './output_data/judgement_model')
+if __name__ == '__main__':
+    model = JudgementModel(1000, 512, 128, 2)
+    model.load_state_dict(torch.load('./output_data/judgement_model'))
+    model.eval()
+    x, y = prepare_data(3360, 0.5)
+    test_dataset = MyDataset(x, y)
+    # 实例化
+    test_loader = DataLoader(dataset=test_dataset,  # 要传递的数据集
+                             batch_size=3360,  # 一个小批量数据的大小是多少
+                             shuffle=True,  # 数据集顺序是否要打乱，一般是要的。测试数据集一般没必要
+                             num_workers=0)  # 需要几个进程来一次性读取这个小批量数据，默认0，一般用0就够了，多了有时会出一些底层错误
 
-model = JudgementModel(1000, 512, 128, 2)
-model.load_state_dict(torch.load('./output_data/judgement_model'))
-model.eval()
-x, y = prepare_data(3360, 0.5)
-test_dataset = MyDataset(x, y)
-# 实例化
-test_loader = DataLoader(dataset=test_dataset,  # 要传递的数据集
-                         batch_size=3360,  # 一个小批量数据的大小是多少
-                         shuffle=True,  # 数据集顺序是否要打乱，一般是要的。测试数据集一般没必要
-                         num_workers=0)  # 需要几个进程来一次性读取这个小批量数据，默认0，一般用0就够了，多了有时会出一些底层错误
-
-for i, data in enumerate(test_loader):
-    inputs, labels = data
-    # 2. 前向传播
-    y_pred = model(inputs)
+    for i, data in enumerate(test_loader):
+        inputs, labels = data
+        # 2. 前向传播
+        y_pred = model(inputs)
 
 
 # from matplotlib import pyplot as plt

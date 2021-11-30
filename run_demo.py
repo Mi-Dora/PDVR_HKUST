@@ -9,10 +9,14 @@ import argparse
 import multiprocessing
 
 import numpy as np
+import torch
 import tqdm
 import json
 
+from torch.utils.data import DataLoader
+
 from PDVR_HKUST.Lstm import Lstm
+from PDVR_HKUST.video_transition_judgment import MyDataset, JudgementModel, RunDataSet
 from utils import *
 from scipy.spatial.distance import cdist
 
@@ -26,6 +30,35 @@ def get_feature(img_list, save_path, model_path, cores=8, batch_sz=32):
     vgg = CNN_tf('vgg', model_path)
     feature_extraction_images(vgg, cores, batch_sz,
                               img_list, save_path)
+
+
+def get_change(query_embeddings):
+    model = JudgementModel(1000, 512, 128, 2)
+    model.load_state_dict(torch.load('./output_data/judgement_model'))
+    x_data = None
+    y_data = []
+    y_pred = None
+    for i in range(0, query_embeddings.shape[0] - 1):
+        new_data = np.vstack((query_embeddings[i][np.newaxis, :], query_embeddings[i + 1][np.newaxis, :]))[
+            np.newaxis, ...]
+        if x_data is None:
+            x_data = new_data
+        else:
+            x_data = np.vstack((x_data, new_data))
+    my_dataset = RunDataSet(x_data)
+    # 实例化
+    run_loader = DataLoader(dataset=my_dataset,  # 要传递的数据集
+                            batch_size=32,  # 一个小批量数据的大小是多少
+                            shuffle=False,  # 数据集顺序是否要打乱，一般是要的。测试数据集一般没必要
+                            num_workers=0)
+    for i, data in enumerate(run_loader):
+        inputs = data
+        result = model(inputs)
+        if y_pred is None:
+            y_pred = result.detach().numpy()
+        else:
+            y_pred = np.vstack((y_pred, result.detach().numpy()))
+    return y_pred
 
 
 def calculate_similarities(query_feature, features):
@@ -157,8 +190,9 @@ if __name__ == '__main__':
         db_embeddings.append(np.load(file[0]))
     query_embeddings = np.load(args['query'] + 'q_embedding.npy')
     print('Computing similarity...')
+    change_label = get_change(query_embeddings)
     lstm = Lstm()
-    change_label = np.load("output_data/y_pred.npy")
+    # change_label = np.load("output_data/y_pred.npy")
     lstm.train_lstm(query_embeddings, db_embeddings, change_label)
 
     # similarities = calculate_similarities(query_embeddings, db_embeddings)
