@@ -23,7 +23,7 @@ def convert2gif(img_list: list, o_dir):
     frames = []
     for path in tqdm(img_list):
         frames.append(imageio.imread(path))
-    imageio.mimsave(o_dir, frames, fps=1)
+    imageio.mimsave(o_dir, frames, fps=2.5)
 
     print('remove all resized images:')
     for path in tqdm(img_list):
