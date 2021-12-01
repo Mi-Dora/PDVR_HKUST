@@ -10,6 +10,8 @@ def select_frames(video_len):
     start = random.randint(0, max_end)
     min_start = start + 60
     end = random.randint(min_start, video_len)
+    while end - start > 120:
+        end = random.randint(min_start, video_len)
 
     return list(range(start, end + 1))
 
@@ -28,9 +30,9 @@ if __name__ == '__main__':
     output_data_path = '/Users/yingxiayin/ClassData/MachineLearning/'
 
     # total num of video
-    num = 100
+    num = 10
     # a video contains x parts
-    part_range = [5, 11]
+    part_range = [3, 5]
     # original video data
     num_original_video = 13
     video_info_list = [[1, 1371], [2, 523], [3, 1380], [4, 1356], [5, 1371], [6, 1350], [7, 1350], [8, 1350], [9, 1350],
@@ -43,7 +45,10 @@ if __name__ == '__main__':
         single_video_info = [[], []]
         single_video_img = []
         for j in range(num_parts+1):
-            video_list_id = random.randint(0, num_original_video)
+            video_list_id = random.randint(0, num_original_video-1)
+
+            print(video_list_id)
+
             frame_list = select_frames(video_info_list[video_list_id][1])
             img_path = select_frames_path(original_data_path, video_info_list[video_list_id][0], frame_list)
 
