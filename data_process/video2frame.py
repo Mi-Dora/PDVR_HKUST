@@ -45,6 +45,9 @@ def get_video_meta(video_file):
             str(video_file)
         ]
         output = subprocess.check_output(cmd)
+
+        print(output)
+
         output = json.loads(output)
 
         streamsbytype = {}
