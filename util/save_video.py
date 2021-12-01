@@ -1,7 +1,8 @@
 import cv2
+import tqdm
 
 
-def save_video(list_file, save_path, fps=30,  greyscale=False):
+def save_video(file_list, save_path, fps=30, greyscale=False):
     """
     Args:
         frame_list: (list of ndarray or ndarray) frame list
@@ -9,9 +10,9 @@ def save_video(list_file, save_path, fps=30,  greyscale=False):
         fps: frame per second
         greyscale: whether save grey scale video
     """
-    with open(list_file, 'r') as f:
-        lines = f.readlines()
-    img = cv2.imread(lines[0])
+    # with open(file_list, 'r') as f:
+    #     lines = f.readlines()
+    img = cv2.imread(file_list[0])
     if greyscale:
         H, W = img.shape
     else:
@@ -23,11 +24,12 @@ def save_video(list_file, save_path, fps=30,  greyscale=False):
         writer.open(save_path, encoder, fps=fps, frameSize=size, isColor=False)
     else:
         writer.open(save_path, encoder, fps=fps, frameSize=size, isColor=True)
-
-    for line in lines:
+    pbar = tqdm.tqdm(total=len(file_list))
+    for line in file_list:
         frame = cv2.imread(line)
         writer.write(frame)
-
+        pbar.update(1)
+    pbar.close()
     print(save_path + ' saved.')
     writer.release()
 
