@@ -43,7 +43,7 @@ class CNN_tf():
 
           Args:
             name: name of the CNN network
-            model_ckpt: path to ckpt file of the pre-trained CNN model
+            model_ckpt: path to ckpt file of the pre-trained CNN judgement_model
 
           Raise:
             ValueError: if provided network name is not provided
@@ -107,10 +107,10 @@ class CNN_tf():
 
     def load_model(self, model_ckpt):
         """
-          Function that loads the pre-trained model.
+          Function that loads the pre-trained judgement_model.
 
           Args:
-            model_ckpt: path to ckpt file of the pre-trained CNN model
+            model_ckpt: path to ckpt file of the pre-trained CNN judgement_model
 
           Returns:
             tf_init: variables initializer

@@ -210,7 +210,7 @@ def resnet_arg_scope(weight_decay=0.0001,
     training ResNets from scratch, they might need to be tuned.
 
   Args:
-    weight_decay: The weight decay to use for regularizing the model.
+    weight_decay: The weight decay to use for regularizing the judgement_model.
     batch_norm_decay: The moving average decay when estimating layer activation
       statistics in batch normalization.
     batch_norm_epsilon: Small constant to prevent division by zero when
