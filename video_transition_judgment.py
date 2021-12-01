@@ -40,7 +40,7 @@ def prepare_data(size: int, rate: float):
             embed = np.load('./database/' + str(video_index) + '_embedding.npy')
             frame_index = random.randint(1, embed.shape[0] - 1)
             frame1 = embed[frame_index]
-            frame2 = embed[frame_index - 1]
+            frame2 = embed[random.randint(1, embed.shape[0] - 1)]
             y_data.append(np.int64(0))
         else:
             video_index1 = random.randint(1, 11)
@@ -155,7 +155,7 @@ def train(epoch_num: int, judgement_model):
                 print(f'epoch:{epoch + 1}, loss:{loss}')
 
 
-# judgement_model = judgement_model(1000, 512, 128, 2)
+# judgement_model = JudgementModel(1000, 512, 128, 2)
 # train(100, judgement_model)
 #
 # torch.save(judgement_model.state_dict(), './output_data/judgement_model')
@@ -175,6 +175,7 @@ if __name__ == '__main__':
         inputs, labels = data
         # 2. 前向传播
         y_pred = model(inputs)
+        print(f'acc:{get_acc(y_pred,labels)}')
 
 
 # from matplotlib import pyplot as plt
