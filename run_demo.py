@@ -9,8 +9,14 @@ import argparse
 import multiprocessing
 
 import numpy as np
+import torch
 import tqdm
 import json
+
+from torch.utils.data import DataLoader
+
+from PDVR_HKUST.Lstm import Lstm
+from PDVR_HKUST.video_transition_judgment import MyDataset, JudgementModel, RunDataSet
 from utils import *
 from scipy.spatial.distance import cdist
 
@@ -24,6 +30,35 @@ def get_feature(img_list, save_path, model_path, cores=8, batch_sz=32):
     vgg = CNN_tf('vgg', model_path)
     feature_extraction_images(vgg, cores, batch_sz,
                               img_list, save_path)
+
+
+def get_change(query_embeddings):
+    model = JudgementModel(1000, 512, 128, 2)
+    model.load_state_dict(torch.load('./output_data/judgement_model'))
+    x_data = None
+    y_data = []
+    y_pred = None
+    for i in range(0, query_embeddings.shape[0] - 1):
+        new_data = np.vstack((query_embeddings[i][np.newaxis, :], query_embeddings[i + 1][np.newaxis, :]))[
+            np.newaxis, ...]
+        if x_data is None:
+            x_data = new_data
+        else:
+            x_data = np.vstack((x_data, new_data))
+    my_dataset = RunDataSet(x_data)
+    # 实例化
+    run_loader = DataLoader(dataset=my_dataset,  # 要传递的数据集
+                            batch_size=32,  # 一个小批量数据的大小是多少
+                            shuffle=False,  # 数据集顺序是否要打乱，一般是要的。测试数据集一般没必要
+                            num_workers=0)
+    for i, data in enumerate(run_loader):
+        inputs = data
+        result = model(inputs)
+        if y_pred is None:
+            y_pred = result.detach().numpy()
+        else:
+            y_pred = np.vstack((y_pred, result.detach().numpy()))
+    return y_pred
 
 
 def calculate_similarities(query_feature, features):
@@ -43,22 +78,22 @@ def calculate_similarities(query_feature, features):
             min_dist_pic = 100000000
             min_pic_index = -1
             for k, pic_features in enumerate(videos_features):
-                dist = np.sum((np.array(query_pic_feature) - np.array(pic_features))**2)
+                dist = np.sum((np.array(query_pic_feature) - np.array(pic_features)) ** 2)
                 if dist < min_dist_pic:
                     min_dist_pic = dist
                     min_pic_index = k
 
             # add min_dist to (j+1)-th key's list
-            if str(j+1) in similarities_of_all:
-                similarities_of_all[str(j+1)].append(min_dist_pic)
+            if str(j + 1) in similarities_of_all:
+                similarities_of_all[str(j + 1)].append(min_dist_pic)
             else:
-                similarities_of_all[str(j+1)] = [min_dist_pic]
+                similarities_of_all[str(j + 1)] = [min_dist_pic]
             if min_dist_pic < min_dist_video:
                 min_video_frame_index = min_pic_index
                 min_video_index = j
                 min_dist_video = min_dist_pic
             max_dist = max(min_dist_pic, max_dist)
-        gif_index.append((min_video_index+1, min_video_frame_index))
+        gif_index.append((min_video_index + 1, min_video_frame_index))
         # normalize every frame's distance (calculate final similarity)
         for values in similarities_of_all.values():
             values[i] = np.round(1 - values[i] / max_dist, decimals=6)
@@ -112,7 +147,7 @@ if __name__ == '__main__':
     if process_query_feature:
         print('Processing query video...')
         p = multiprocessing.Process(target=get_feature,
-                                    args=(args['query']+'q_list.txt', args['query'], args['tf_model']))
+                                    args=(args['query'] + 'q_list.txt', args['query'], args['tf_model']))
         p.start()
         p.join()
 
@@ -144,17 +179,23 @@ if __name__ == '__main__':
                 vid = int(file.split('_')[0])
                 db_embedding_files.append((os.path.join(root, file), vid))
 
+
     def getVid(x):
         return x[1]
+
+
     db_embedding_files.sort(key=getVid)
     db_embeddings = []
     for file in db_embedding_files:
         db_embeddings.append(np.load(file[0]))
     query_embeddings = np.load(args['query'] + 'q_embedding.npy')
     print('Computing similarity...')
-    similarities = calculate_similarities(query_embeddings, db_embeddings)
-    json_sim = json.dumps(similarities)
-    with open('output_data/sim_output.json', 'w') as f:
-        f.write(json_sim)
+    change_label = get_change(query_embeddings)
+    lstm = Lstm()
+    # change_label = np.load("output_data/y_pred.npy")
+    lstm.train_lstm(query_embeddings, db_embeddings, change_label)
 
-
+    # similarities = calculate_similarities(query_embeddings, db_embeddings)
+    # json_sim = json.dumps(similarities)
+    # with open('output_data/sim_output.json', 'w') as f:
+    #     f.write(json_sim)

@@ -45,8 +45,8 @@ class CNN_caffe():
 
           Args:
             name: name of the CNN network
-            prototxt: path to prototxt file of the pre-trained CNN model
-            caffemodel: path to caffemodel file of the pre-trained CNN model
+            prototxt: path to prototxt file of the pre-trained CNN judgement_model
+            caffemodel: path to caffemodel file of the pre-trained CNN judgement_model
 
           Raise:
             ValueError: if provided network name is not provided

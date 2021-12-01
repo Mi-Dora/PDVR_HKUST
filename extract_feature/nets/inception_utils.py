@@ -37,7 +37,7 @@ def inception_arg_scope(weight_decay=0.00004,
   """Defines the default arg scope for inception models.
 
   Args:
-    weight_decay: The weight decay to use for regularizing the model.
+    weight_decay: The weight decay to use for regularizing the judgement_model.
     use_batch_norm: "If `True`, batch_norm is applied after each convolution.
     batch_norm_decay: Decay for batch norm moving average.
     batch_norm_epsilon: Small float added to variance to avoid dividing by zero
