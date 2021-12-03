@@ -23,9 +23,6 @@ class SegmentationModel(nn.Module):
         x = self.linear2(torch.tanh(x))
         x = self.norm3(x)
         x = self.linear3(torch.tanh(x))
-        # 注意：整个模型结构的最后一层是线性全连接层，并非是sigmoid层，是因为之后直接接CrossEntropy()损失函数，已经内置了log softmax层的过程了
-        # 若损失函数使用NLLLoss()则需要在模型结构中先做好tanh或者log_softmax
-        # 即：y^ = softmax(x), loss = ylog(y^) + (1-y)log(1-y^)中的过程
         output = torch.softmax(x, 1)
         return output
 

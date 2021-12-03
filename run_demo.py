@@ -9,14 +9,14 @@ import argparse
 import multiprocessing
 
 import numpy as np
-# import torch
+import torch
 import tqdm
 import json
 
-# from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader
 
 from Lstm import Lstm
-# from video_transition_judgment import MyDataset, JudgementModel, RunDataSet
+from segmentation_DNN_model import MyDataset, SegmentationModel, RunDataSet
 from utils import *
 from scipy.spatial.distance import cdist
 
@@ -33,7 +33,7 @@ def get_feature(img_list, save_path, model_path, cores=8, batch_sz=32):
 
 
 def get_change(query_embeddings):
-    model = JudgementModel(1000, 512, 128, 2)
+    model = SegmentationModel(1000, 512, 128, 2)
     model.load_state_dict(torch.load('./output_data/judgement_model'))
     x_data = None
     y_data = []
@@ -128,9 +128,9 @@ if __name__ == '__main__':
 
     args = vars(parser.parse_args())
 
-    process_database_feature = False
-    process_query_feature = False
-    process_embedding = False
+    process_database_feature = True
+    process_query_feature = True
+    process_embedding = True
 
     if process_database_feature:
         print('Generating database...')
