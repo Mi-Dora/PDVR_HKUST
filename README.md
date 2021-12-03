@@ -5,6 +5,8 @@ We use one publicly available dataset namely [CC_WEB_VIDEO](http://vireo.cs.city
 
 And we also use one self-made dataset, which is made up of videos from Bilibili and can be downloaded [here](https://drive.google.com/drive/folders/1XYat0tl2vFmquWZsOYW3w19reJMnkYOJ?usp=sharing).
 
+![pipeline_overview](figs/pipeline_overview.png)
+
 ## Getting started
 
 ### Installation
