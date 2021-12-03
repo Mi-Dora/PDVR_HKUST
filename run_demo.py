@@ -9,14 +9,14 @@ import argparse
 import multiprocessing
 
 import numpy as np
-import torch
+# import torch
 import tqdm
 import json
 
-from torch.utils.data import DataLoader
+# from torch.utils.data import DataLoader
 
-from PDVR_HKUST.Lstm import Lstm
-from PDVR_HKUST.video_transition_judgment import MyDataset, JudgementModel, RunDataSet
+from Lstm import Lstm
+# from video_transition_judgment import MyDataset, JudgementModel, RunDataSet
 from utils import *
 from scipy.spatial.distance import cdist
 
@@ -105,7 +105,7 @@ def calculate_similarities(query_feature, features):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-ql', '--query', type=str, default='query/',
+    parser.add_argument('-ql', '--query', type=str, default='fake_dataset/',
                         help='Path to the .npy file that contains the global '
                              'video vectors of the CC_WEB_VIDEO dataset')
     # parser.add_argument('-qp', '--query_path', type=str, default='query/pic',
@@ -190,12 +190,12 @@ if __name__ == '__main__':
         db_embeddings.append(np.load(file[0]))
     query_embeddings = np.load(args['query'] + 'q_embedding.npy')
     print('Computing similarity...')
-    change_label = get_change(query_embeddings)
-    lstm = Lstm()
+    # change_label = get_change(query_embeddings)
+    # lstm = Lstm()
     # change_label = np.load("output_data/y_pred.npy")
-    lstm.train_lstm(query_embeddings, db_embeddings, change_label)
+    # lstm.train_lstm(query_embeddings, db_embeddings, change_label)
 
-    # similarities = calculate_similarities(query_embeddings, db_embeddings)
-    # json_sim = json.dumps(similarities)
-    # with open('output_data/sim_output.json', 'w') as f:
-    #     f.write(json_sim)
+    similarities = calculate_similarities(query_embeddings, db_embeddings)
+    json_sim = json.dumps(similarities)
+    with open('output_data/sim_output.json', 'w') as f:
+        f.write(json_sim)

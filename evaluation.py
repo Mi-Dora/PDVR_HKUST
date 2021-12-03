@@ -50,7 +50,7 @@ if __name__ == '__main__':
     parser.add_argument('-es', '--evaluation_set', type=str, default='output_data/cc_web_video_features.npy',
                         help='Path to the .npy file that contains the global '
                              'video vectors of the CC_WEB_VIDEO dataset')
-    parser.add_argument('-m', '--model_path', type=str, default='model/',
+    parser.add_argument('-m', '--model_path', type=str, default='model4layer/',
                         help='Path to load the trained DML model')
     parser.add_argument('-f', '--fusion', type=str, default='Early',
                         help='Processed dataset. Options: Early and Late. Default: Early')
