@@ -5,7 +5,7 @@ import tqdm
 def save_video(file_list, save_path, fps=30, greyscale=False):
     """
     Args:
-        frame_list: (list of ndarray or ndarray) frame list
+        file_list: (list of ndarray or ndarray) file list
         save_path: video path to save, with video name and suffix
         fps: frame per second
         greyscale: whether save grey scale video

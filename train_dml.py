@@ -53,7 +53,7 @@ def train_dml_network(model, train_set, triplets, epochs, batch_sz):
             train_batch = train_set[triplet_batch.reshape(-1)]
 
             _, loss, error = model.train(train_batch)
-            with open('output_data/loss_log.txt', 'a') as f:
+            with open('output_data/loss_log2.txt', 'a') as f:
                 f.writelines('{}\n'.format(loss))
 
             pbar.set_postfix(loss=loss, error='{0:.2f}%'.format(error))
@@ -74,7 +74,7 @@ if __name__ == '__main__':
                         help='Path to the .npy file that contains the triplets '
                              'generated based on the train set')
     parser.add_argument('-m', '--model_path', type=str,
-                        default='model/',
+                        default='model2/',
                         help='Directory where the generated files will be stored')
     parser.add_argument('-es', '--evaluation_set', type=str,
                         help='Path to the .npy file that contains the global '
@@ -86,10 +86,10 @@ if __name__ == '__main__':
                         help='Number of injected triplets generated from the '
                              'evaluation set. It is only applied when the '
                              'evaluation_set is provided. Default: 10000, Max:10000')
-    parser.add_argument('-l', '--layers', default='2000,1000,500',
+    parser.add_argument('-l', '--layers', default='2000,500',
                         help='Number of neuron for each layer of the DML network, '
-                             'separated by a comma \',\'. Default: 2000,1000,500')
-    parser.add_argument('-e', '--epochs', type=int, default=50,
+                             'separated by a comma \',\'. Default: 2000,500')
+    parser.add_argument('-e', '--epochs', type=int, default=10,
                         help='Number of epochs to train the DML network. Default: 10')
     parser.add_argument('-b', '--batch_sz', type=int, default=1000,
                         help='Number of triplets fed every training iteration. '
