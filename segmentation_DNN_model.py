@@ -6,9 +6,9 @@ from torch.utils.data import Dataset  # Dataset是个抽象类，只能用于继
 from torch.utils.data import DataLoader  # DataLoader需实例化，用于加载数据
 
 
-class JudgementModel(nn.Module):
+class SegmentationModel(nn.Module):
     def __init__(self, input_dim, hidden_dim, hidden2_dim, output_dim):
-        super(JudgementModel, self).__init__()
+        super(SegmentationModel, self).__init__()
         self.norm = nn.BatchNorm1d(input_dim)
         self.linear1 = nn.Linear(input_dim, hidden_dim)
         self.norm2 = nn.BatchNorm1d(hidden_dim)
@@ -26,7 +26,7 @@ class JudgementModel(nn.Module):
         # 注意：整个模型结构的最后一层是线性全连接层，并非是sigmoid层，是因为之后直接接CrossEntropy()损失函数，已经内置了log softmax层的过程了
         # 若损失函数使用NLLLoss()则需要在模型结构中先做好tanh或者log_softmax
         # 即：y^ = softmax(x), loss = ylog(y^) + (1-y)log(1-y^)中的过程
-        output = torch.sigmoid(x)
+        output = torch.softmax(x, 1)
         return output
 
 
@@ -155,12 +155,12 @@ def train(epoch_num: int, judgement_model):
                 print(f'epoch:{epoch + 1}, loss:{loss}')
 
 
-# judgement_model = JudgementModel(1000, 512, 128, 2)
-# train(100, judgement_model)
-#
-# torch.save(judgement_model.state_dict(), './output_data/judgement_model')
 if __name__ == '__main__':
-    model = JudgementModel(1000, 512, 128, 2)
+    # segmentation_model = SegmentationModel(1000, 512, 128, 2)
+    # train(100, segmentation_model)
+    # torch.save(segmentation_model.state_dict(), './output_data/judgement_model')
+    model = SegmentationModel(1000, 512, 128, 2)
+
     model.load_state_dict(torch.load('./output_data/judgement_model'))
     model.eval()
     x, y = prepare_data(3360, 0.5)
@@ -179,7 +179,6 @@ if __name__ == '__main__':
 
 
 # from matplotlib import pyplot as plt
-#
 # plt.title('PR graph')
 # plt.xlabel('recall')
 # plt.ylim(0.5, 1)
