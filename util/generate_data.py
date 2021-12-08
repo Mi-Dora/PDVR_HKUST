@@ -1,6 +1,7 @@
 import random
 from generate_gif import pre_process, convert2gif
 from save_video import save_video
+import numpy as np
 
 import os
 
@@ -31,18 +32,18 @@ if __name__ == '__main__':
     output_data_path = '/Users/yingxiayin/ClassData/MachineLearning/'
 
     # total num of video
-    num = 5
+    num = 2
     # a video contains x parts
-    part_range = [5, 9]
+    part_range = [2, 4]
     # original video data
     num_original_video = 13
     video_info_list = [[1, 1371], [2, 523], [3, 1380], [4, 1356], [5, 1371], [6, 1350], [7, 1350], [8, 1350], [9, 1350],
                        [10, 1350], [11, 1350], [12, 957], [13, 1276]]
     new_video_info = {}
     for i in range(num):
-        print('generate gif image no.{:d}'.format(i))
+        print('generate no.{:d}'.format(i))
         num_parts = random.randint(part_range[0], part_range[1])
-        print('it has {:d} parts'.format(num_parts))
+        print('it has {:d} parts'.format(num_parts+1))
         single_video_info = [[], []]
         single_video_img = []
         for j in range(num_parts+1):
@@ -60,11 +61,15 @@ if __name__ == '__main__':
 
         new_video_info[str(i)] = single_video_info
 
+
         # gif
         new_img_paths = pre_process(single_video_img)
         # convert2gif(new_img_paths, output_data_path+str(i)+'.gif')
-        save_video(new_img_paths, output_data_path+str(i)+'.gif', fps=25)
+        # MP4
+        save_video(new_img_paths, output_data_path+str(i)+'.mp4', fps=25)
+        print('No {:d} Successfully'.format(i))
 
-        print('Successfully')
+    print(new_video_info)
+    np.save(output_data_path, new_video_info)
 
 
